@@ -180,7 +180,7 @@ body
 
 5. Логика бустерпака
 ```bash
-POST http://127.0.0.1/main_page/buy_boosterpack{boosterpack-id}
+POST http://127.0.0.1/main_page/buy_boosterpack/{boosterpack-id}
 ```
 
 6. Реализовано 3 процессинга likes, wallet, profitbank.
