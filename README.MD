@@ -134,7 +134,7 @@ mysql/dump.sql - залить дамп
 Я пытался выйти за рамки парадигмы MVC и ввести элементы DDD и некоторые паттерны проектирования класов.
 Насколько мог мне позволить данный фреймворк. Реализована только backend часть задания.
 
-#Установка
+### Установка
 ```bash
 git clone git@github.com:SergeyKoz/booster-pack.git
 ```
@@ -153,7 +153,7 @@ docker-compose up
 ```bash
 http://127.0.0.1/migrate
 ```
-#API
+### API
 1. Aвторизация
 ```bash
 POST http://127.0.0.1/main_page/login
@@ -188,7 +188,7 @@ POST http://127.0.0.1/main_page/buy_boosterpack{boosterpack-id}
 like_history, wallet_history, profit_bank_history.
 На основе данных таблиц можно получить необходимую статистику. 
 
-#Дополнительно
+### Дополнительно
 
 Для шифорования паролей применил библиотеку encrypt.
 Добавил метод для добавления пользователей
