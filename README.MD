@@ -132,4 +132,77 @@ mysql/dump.sql - залить дамп
 
 #### Вариант решения
 Я пытался выйти за рамки парадигмы MVC и ввести элементы DDD и некоторые паттерны проектирования класов.
-Насколько мог мне позволить данный фреймворк.
+Насколько мог мне позволить данный фреймворк. Реализована только backend часть задания.
+
+#Установка
+```bash
+git clone git@github.com:SergeyKoz/booster-pack.git
+```
+
+Config file `application/common/config.php` указать ключ для шифрования паролей
+
+```php
+$config['encryption_key'] = '<the key>';
+```
+перейти папку проекта
+```bash
+docker-compose up
+```
+
+запустить миграции
+```bash
+http://127.0.0.1/migrate
+```
+#API
+1. Aвторизация
+```bash
+POST http://127.0.0.1/main_page/login
+body
+{"login":"AdminProGod","password":"AdminProGod"}
+```
+2. Комментирование c возможностью комментирования вложенных комментариев
+```bash
+POST http://127.0.0.1/main_page/comment/{post_id}
+POST http://127.0.0.1/main_page/comment/{post_id}/{parent_commit_id}
+body
+{"text":"Сomment to the post"}
+```
+3. Реализация like конкретных постов/комментариев пока есть баланс
+```bash
+POST http://127.0.0.1/main_page/like/{post|comment}/{id}
+```
+4. Пополнение счета
+```bash
+POST http://127.0.0.1/main_page/add_money
+body
+{"sum":"10"}
+```
+
+5. Логика бустерпака
+```bash
+POST http://127.0.0.1/main_page/buy_boosterpack{boosterpack-id}
+```
+
+6. Реализовано 3 процессинга likes, wallet, profitbank.
+История всех транзакций по счетам находится в соответсвенно в таблицах
+like_history, wallet_history, profit_bank_history.
+На основе данных таблиц можно получить необходимую статистику. 
+
+#Дополнительно
+
+Для шифорования паролей применил библиотеку encrypt.
+Добавил метод для добавления пользователей
+```bash
+POST http://127.0.0.1/main_page/create_user
+body
+{"email": "email@gmail.com", "personaname": "Serhii", "password": "Serhii", "wallet_balance": 0, "wallet_total_refilled": 0, "wallet_total_withdrawn": 0, "time_created": "2020-06-20 10:25:40" }
+```
+Откат миграций
+```bash
+http://127.0.0.1/migrate/down
+```
+
+
+
+
+
