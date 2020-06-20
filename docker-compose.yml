@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  database:
+    image: mysql:latest
+    container_name: buster-pack-database
+    environment:
+      - MYSQL_DATABASE=buster-pack
+#      - MYSQL_USER=root
+      - MYSQL_PASSWORD=dev
+      - MYSQL_ROOT_PASSWORD=dev
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    networks:
+      - buster-pack-net
+    volumes:
+      - ./mysql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+
+  php-fpm:
+    container_name: buster-pack-php
+    build:
+      context: .docker/php-fpm
+    depends_on:
+      - database
+    volumes:
+      - .:/opt
+    networks:
+      - buster-pack-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: buster-pack-nginx
+    volumes:
+      - .:/opt
+      - .docker/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-fpm
+    ports:
+      - "80:80"
+    tty: true
+    networks:
+      - buster-pack-net
+
+  memcached:
+    container_name: buster-pack-memcached
+    image: memcached
+    networks:
+      - buster-pack-net
+
+networks:
+  buster-pack-net:
+    driver: bridge

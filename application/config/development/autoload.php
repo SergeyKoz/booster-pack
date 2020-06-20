@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('core','session', 'sparrow_starter'); //'Twig', ,'settings' ,'steam_item'
+$autoload['libraries'] = array('core','session', 'sparrow_starter', 'encrypt', 'Paymentservice'); //'Twig', ,'settings' ,'steam_item'
 
 /*
 | -------------------------------------------------------------------
@@ -125,4 +125,4 @@ $autoload['language'] = array();
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array();
+$autoload['model'] = [];

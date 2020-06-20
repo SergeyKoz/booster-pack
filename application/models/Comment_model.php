@@ -10,11 +10,12 @@ class Comment_model extends CI_Emerald_Model
 {
     const CLASS_TABLE = 'comment';
 
-
+    /** @var int */
+    protected $parent_id;
     /** @var int */
     protected $user_id;
     /** @var int */
-    protected $assing_id;
+    protected $assign_id;
     /** @var string */
     protected $text;
 
@@ -25,9 +26,28 @@ class Comment_model extends CI_Emerald_Model
 
     // generated
     protected $comments;
+    /** @var int */
     protected $likes;
     protected $user;
 
+    /**
+     * @return string
+     */
+    public function get_parent_id(): int
+    {
+        return $this->parent_id;
+    }
+
+    /**
+     * @param int $parent_id
+     *
+     * @return bool
+     */
+    public function set_parent_id(int $parent_id)
+    {
+        $this->parent_id = $parent_id;
+        return $this->save('parent_id', $parent_id);
+    }
 
     /**
      * @return int
@@ -51,20 +71,20 @@ class Comment_model extends CI_Emerald_Model
     /**
      * @return int
      */
-    public function get_assing_id(): int
+    public function get_assign_id(): int
     {
-        return $this->assing_id;
+        return $this->assign_id;
     }
 
     /**
-     * @param int $assing_id
+     * @param int $assign_id
      *
      * @return bool
      */
-    public function set_assing_id(int $assing_id)
+    public function set_assign_id(int $assign_id)
     {
-        $this->assing_id = $assing_id;
-        return $this->save('assing_id', $assing_id);
+        $this->assign_id = $assign_id;
+        return $this->save('assign_id', $assign_id);
     }
 
 
@@ -126,14 +146,23 @@ class Comment_model extends CI_Emerald_Model
         return $this->save('time_updated', $time_updated);
     }
 
-    // generated
-
     /**
-     * @return mixed
+     * @return int
      */
-    public function get_likes()
+    public function get_likes(): string
     {
         return $this->likes;
+    }
+
+    /**
+     * @param int $likes
+     *
+     * @return bool
+     */
+    public function set_likes(int $likes)
+    {
+        $this->likes = $likes;
+        return $this->save('likes', $likes);
     }
 
     /**
@@ -192,14 +221,13 @@ class Comment_model extends CI_Emerald_Model
     }
 
     /**
-     * @param int $assting_id
+     * @param int $assign_id
      * @return self[]
      * @throws Exception
      */
-    public static function get_all_by_assign_id(int $assting_id)
+    public static function get_all_by_assign_id(int $assign_id)
     {
-
-        $data = App::get_ci()->s->from(self::CLASS_TABLE)->where(['assign_id' => $assting_id])->orderBy('time_created','ASC')->many();
+        $data = App::get_ci()->s->from(self::CLASS_TABLE)->where(['assign_id' => $assign_id])->orderBy('time_created','ASC')->many();
         $ret = [];
         foreach ($data as $i)
         {
@@ -219,7 +247,7 @@ class Comment_model extends CI_Emerald_Model
         switch ($preparation)
         {
             case 'full_info':
-                return self::_preparation_full_info($data);
+                return self::_preparation_full_info($data, 0);
             default:
                 throw new Exception('undefined preparation type');
         }
@@ -228,26 +256,32 @@ class Comment_model extends CI_Emerald_Model
 
     /**
      * @param self[] $data
+     * @param $parent_id
      * @return stdClass[]
+     * @throws Exception
      */
-    private static function _preparation_full_info($data)
+    private static function _preparation_full_info($data, $parent_id)
     {
         $ret = [];
 
         foreach ($data as $d){
-            $o = new stdClass();
 
-            $o->id = $d->get_id();
-            $o->text = $d->get_text();
+            if ($d->get_parent_id() == $parent_id) {
+                $o = new stdClass();
 
-            $o->user = User_model::preparation($d->get_user(),'main_page');
+                $o->id = $d->get_id();
+                $o->text = $d->get_text();
 
-            $o->likes = rand(0, 25);
+                $o->user = User_model::preparation($d->get_user(),'main_page');
 
-            $o->time_created = $d->get_time_created();
-            $o->time_updated = $d->get_time_updated();
+                $o->likes = $d->get_likes();
 
-            $ret[] = $o;
+                $o->time_created = $d->get_time_created();
+                $o->time_updated = $d->get_time_updated();
+                $o->children = Comment_model::_preparation_full_info($data, $d->get_id());
+
+                $ret[] = $o;
+            }
         }
 
 

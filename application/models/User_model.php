@@ -242,8 +242,23 @@ class User_model extends CI_Emerald_Model {
 
     public static function create(array $data)
     {
+        App::get_ci()->load->model('Likeprocessing_model');
+        App::get_ci()->load->model('Profitbankprocessing_model');
+
         App::get_ci()->s->from(self::CLASS_TABLE)->insert($data)->execute();
-        return new static(App::get_ci()->s->get_insert_id());
+
+        $user_id = App::get_ci()->s->get_insert_id();
+
+        $processing_data = [
+            'user_id' => $user_id,
+            'balance' => 0,
+            'created_at' => time(),
+            'updated_at' => time()
+        ];
+        App::get_ci()->s->from(Likeprocessing_model::CLASS_TABLE)->insert($processing_data)->execute();
+        App::get_ci()->s->from(Profitbankprocessing_model::CLASS_TABLE)->insert($processing_data)->execute();
+
+        return new static($user_id);
     }
 
     public function delete()
@@ -268,7 +283,6 @@ class User_model extends CI_Emerald_Model {
         }
         return $ret;
     }
-
 
     /**
      * @param User_model|User_model[] $data
